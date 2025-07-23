@@ -15,13 +15,13 @@ def planner_node(state: AgentState) -> AgentState:
     return {**state, "plan": plan}
 
 def worker_node(state: AgentState) -> AgentState:
-    output = llm.invoke(f"""You are a specialized AI agent. 
-    Your job is to complete a task by following the plan exactly and producing a final answer. 
+    output = llm.invoke(f"""You are a specialized AI agent.
+    Your job is to complete a task by following the plan exactly and producing a final answer with an explanation.
     Here is the plan you must follow:
 
     {state['plan']}
 
-    Now complete the task. Do NOT describe what you are doing. Just return the final output.""")
+    Now complete the task. Do not describe a response to the planner or say you're following the plan. Explain your response.""")
     return {**state, "output": output}
 
 def reviewer_node(state: AgentState) -> AgentState:
@@ -48,4 +48,4 @@ while True:
         break
 
     result = graph.invoke({"task" : question})
-    print("\n----------------------------\n" + result["output"] + "\n----------------------------\n")
+    print("\n----------------------------\n\n" + result["output"] + "\n----------------------------\n")

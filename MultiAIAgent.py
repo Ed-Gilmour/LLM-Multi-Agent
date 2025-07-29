@@ -18,7 +18,7 @@ def planner_node(state: AgentState) -> AgentState:
 
     Do NOT explain, do NOT reason, and DO NOT solve the problem.
 
-    Return ONLY the list of steps in the following exact format (no other text):
+    Return ONLY the list of steps in the following format (no other text):
 
     1. Step one
     2. Step two
@@ -27,15 +27,16 @@ def planner_node(state: AgentState) -> AgentState:
 
     Task:
     {state['task']}
-    """)
-    print("\n--------------PLAN--------------\n\n" + plan.strip() + "\n\n----------------------------\n")
+    """).strip()
+
+    print("\n--------------PLAN--------------\n\n" + plan + "\n\n----------------------------\n")
     return {**state, "plan": plan}
 
 def worker_node(state: AgentState) -> AgentState:
     output = llm.invoke(f"""
     You are a WORKER.
 
-    Your job is to follow the plan to complete the task and produce a user-ready answer or explanation.
+    Your job is to follow the plan to complete the task and produce a user-ready answer and explanation.
 
     Do NOT add any plans.
 
@@ -48,13 +49,14 @@ def worker_node(state: AgentState) -> AgentState:
     Plan:
     {state['plan']}
 
-    Previous output:
+    PREVIOUS output:
     {state.get("output", "No previous output")}
 
     Suggestions:
     {state.get("review", "No suggestions")}
-    """)
-    print("\n--------------OUTPUT--------------\n\n" + output.strip() + "\n\n----------------------------\n")
+    """).strip()
+
+    print("\n--------------OUTPUT--------------\n\n" + output + "\n\n----------------------------\n")
     return {**state, "output": output}
 
 def reviewer_node(state: AgentState) -> AgentState:
@@ -73,9 +75,9 @@ def reviewer_node(state: AgentState) -> AgentState:
 
     Output to review:
     {state['output']}
-    """)
+    """).strip()
 
-    print("\n--------------REVIEW--------------\n\n" + review.strip() + "\n\n----------------------------\n")
+    print("\n--------------REVIEW--------------\n\n" + review + "\n\n----------------------------\n")
     return {**state, "review": review}
 
 def check_review_done(state):
@@ -105,4 +107,4 @@ while True:
     if question.lower() in ["quit", "exit"]:
         break
 
-    result = graph.invoke({"task" : question})
+    graph.invoke({"task": question})
